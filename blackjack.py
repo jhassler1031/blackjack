@@ -77,14 +77,39 @@ class Player:
             value += card.value
         return value
 
+    def __eq__(self, value):
+        return self.hand_value() == value
+
+    def __lt__(self, value):
+        return self.hand_value() < value
+
+    def __gt__(self, value):
+        return self.hand_value() > value
+
+#Dealer class
+
+class Dealer(Player):
+
+    def __init__(self):
+        self.hand = []
+
+    def deal_a_card(self, deck):
+        return deck.draw_a_card()
+
+    def deal_a_hand(self, deck, other_player):
+        for _ in range(2):
+            other_player.add_card(deck.draw_a_card())
+            self.add_card(deck.draw_a_card())
+
 
 #Start of program
 
 deck = Deck()
 
 john = Player()
+dealer = Dealer()
 
-john.add_card(deck.draw_a_card())
-john.add_card(deck.draw_a_card())
+dealer.deal_a_hand(deck, john)
 
 print(john.hand_value())
+print(dealer.hand_value())
