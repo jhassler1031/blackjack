@@ -77,6 +77,10 @@ class Player:
             value += card.value
         return value
 
+    def player_turn(self, player_input, deck):
+        if player_input == "1":
+            self.add_card(deck.draw_a_card())
+
     def __eq__(self, value):
         return self.hand_value() == value
 
@@ -93,13 +97,11 @@ class Dealer(Player):
     def __init__(self):
         self.hand = []
 
-    def deal_a_card(self, deck):
-        return deck.draw_a_card()
-
-    def deal_a_hand(self, deck, other_player):
-        for _ in range(2):
-            other_player.add_card(deck.draw_a_card())
+    def player_turn(self, deck, max_on_hit = 16):
+        if self.hand_value() <= max_on_hit:
             self.add_card(deck.draw_a_card())
+
+
 
 
 #Start of program
@@ -109,7 +111,13 @@ deck = Deck()
 john = Player()
 dealer = Dealer()
 
-dealer.deal_a_hand(deck, john)
+#Deal a hand
+for _ in range(2):
+    john.add_card(deck.draw_a_card())
+    dealer.add_card(deck.draw_a_card())
 
 print(john.hand_value())
-print(dealer.hand_value())
+
+john.player_turn(input("1 to hit or 2 to stay: "), deck)
+
+print(john.hand_value())
