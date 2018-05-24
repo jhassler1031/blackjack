@@ -75,6 +75,9 @@ class Player:
         value = 0
         for card in self.hand:
             value += card.value
+        for card in self.hand:
+            if value <= 11 and card.name == "Ace":
+                value += 10
         return value
 
     def player_turn(self, player_input, deck):
@@ -86,6 +89,18 @@ class Player:
         else:
             print("Player stands.")
             print()
+            return False
+
+    def check_21(self):
+        if self == 21:
+            return True
+        else:
+            return False
+
+    def check_bust(self):
+        if self > 21:
+            return True
+        else:
             return False
 
     def __eq__(self, value):
@@ -121,6 +136,22 @@ class Dealer(Player):
             print()
             return False
 
+    def deal_hand(self, other):
+        for _ in range(2):
+            other.add_card(deck.draw_a_card())
+            self.add_card(deck.draw_a_card())
+
+"""
+    def check_21(self, other):
+        if other == 21 and self == 21:
+            print("It's a tie.")
+        elif other == 21:
+            print("Player wins!")
+        elif self == 21:
+            print("Deal wins!")
+"""
+
+
 
 
 
@@ -128,36 +159,71 @@ class Dealer(Player):
 
 player = Player()
 dealer = Dealer()
+
 player_state = True
+wants_to_play = True
 
-deck = Deck()
-#counter = 0
+player_win = False
+player_bust = False
+dealer_win = False
+dealer_bust = False
 
-#Deal a hand
-for _ in range(2):
-    player.add_card(deck.draw_a_card())
-    dealer.add_card(deck.draw_a_card())
+#Start of game
 
-#Player's turn
+while wants_to_play:
 
-print("Player's turn. You have: ")
-print(player)
+    deck = Deck()
 
-while player_state:
-    player_input = input("Enter 1 to hit or any to stand: ")
-    player_state = player.player_turn(player_input, deck)
-    print("You have: ")
+    #Deal a hand
+    dealer.deal_hand(player)
+
+    #check for 21 at the beginning
+    if player.check_21():
+        print("Player wins!")
+        break
+    if dealer.check_21():
+        print("Dealer wins!")
+        break
+
+    #Player's turn
+
+    print("Player's turn. You have: ")
     print(player)
 
-#Reset state for dealer
+    while player_state:
+        player_input = input("Enter 1 to hit or any to stand: ")
+        player_state = player.player_turn(player_input, deck)
+        if player.check_21():
+            print("Player wins!")
+            player_win = True
+            break
+        elif player.check_bust():
+            print("Player busts, dealer wins!")
+            player_bust = True
+            break
+        print("You have: ")
+        print(player)
 
-player_state = True
+    if player_win:
+        break
 
-#Dealer's turn
+    #Reset state for dealer
 
-print("Dealer's turn.  Dealer has: ")
-print(dealer)
+    player_state = True
 
-while player_state:
-    player_state = dealer.player_turn(deck)
+    #Dealer's turn
+
+    print("Dealer's turn.  Dealer has: ")
     print(dealer)
+
+    while player_state:
+        player_state = dealer.player_turn(deck)
+        print(dealer)
+
+    #Everyone has stayed, need to compare
+    if player > dealer.hand_value():
+        print("Player wins!")
+    elif player == dealer.hand_value():
+        print("It's a draw.")
+    else:
+        print("Dealer wins!")
