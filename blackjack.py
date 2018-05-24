@@ -90,6 +90,12 @@ class Player:
     def __gt__(self, value):
         return self.hand_value() > value
 
+    def __str__(self):
+        for card in self.hand:
+            print(card)
+        print("Total value: " + str(self.hand_value()))
+        return ""
+
 #Dealer class
 
 class Dealer(Player):
@@ -106,18 +112,21 @@ class Dealer(Player):
 
 #Start of program
 
-deck = Deck()
-
-john = Player()
+player = Player()
 dealer = Dealer()
+#players = [player_1, dealer]
+
+
+deck = Deck()
+#counter = 0
 
 #Deal a hand
 for _ in range(2):
-    john.add_card(deck.draw_a_card())
+    player.add_card(deck.draw_a_card())
     dealer.add_card(deck.draw_a_card())
 
-print(john.hand_value())
 
-john.player_turn(input("1 to hit or 2 to stay: "), deck)
-
-print(john.hand_value())
+while True:
+    print("Player has: ")
+    print(player)
+    player_input = input("Player's turn.  Enter 1 to hit or any to stand: ")
