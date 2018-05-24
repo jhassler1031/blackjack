@@ -79,7 +79,14 @@ class Player:
 
     def player_turn(self, player_input, deck):
         if player_input == "1":
+            print("Player hits.")
+            print()
             self.add_card(deck.draw_a_card())
+            return True
+        else:
+            print("Player stands.")
+            print()
+            return False
 
     def __eq__(self, value):
         return self.hand_value() == value
@@ -105,7 +112,14 @@ class Dealer(Player):
 
     def player_turn(self, deck, max_on_hit = 16):
         if self.hand_value() <= max_on_hit:
+            print("Dealer hits.")
+            print()
             self.add_card(deck.draw_a_card())
+            return True
+        else:
+            print("Dealer stands.")
+            print()
+            return False
 
 
 
@@ -114,8 +128,7 @@ class Dealer(Player):
 
 player = Player()
 dealer = Dealer()
-#players = [player_1, dealer]
-
+player_state = True
 
 deck = Deck()
 #counter = 0
@@ -125,8 +138,26 @@ for _ in range(2):
     player.add_card(deck.draw_a_card())
     dealer.add_card(deck.draw_a_card())
 
+#Player's turn
 
-while True:
-    print("Player has: ")
+print("Player's turn. You have: ")
+print(player)
+
+while player_state:
+    player_input = input("Enter 1 to hit or any to stand: ")
+    player_state = player.player_turn(player_input, deck)
+    print("You have: ")
     print(player)
-    player_input = input("Player's turn.  Enter 1 to hit or any to stand: ")
+
+#Reset state for dealer
+
+player_state = True
+
+#Dealer's turn
+
+print("Dealer's turn.  Dealer has: ")
+print(dealer)
+
+while player_state:
+    player_state = dealer.player_turn(deck)
+    print(dealer)
