@@ -86,6 +86,7 @@ class Player:
 
     def __init__(self):
         self.hand = []
+        self.split_hand = []
         self.money = 100
         self.bet = 0
 
@@ -102,11 +103,18 @@ class Player:
         return value
 
     def player_turn(self, player_input, deck):
-        if player_input == "1":
+        if player_input == "1":     #player hits
             print("Player hits.")
             print()
             self.add_card(deck.draw_a_card())
             return True
+        elif player_input == "2":   #player doubled down
+            self.double_down()
+            self.add_card(deck.draw_a_card())
+            return True
+        elif player_input == "3":   #player surrenders
+            self.surrender()
+            return False
         else:
             print("Player stands.")
             print()
@@ -129,7 +137,12 @@ class Player:
         self.bet = bet
 
     def double_down(self):
-        self.bet += self.bet 
+        print("Player doubled down.")
+        self.bet += self.bet
+
+    def surrender(self):
+        print("Player surrenders.")
+        self.money -= (self.bet / 2)
 
     def player_wins(self):
         print("Player wins!")
@@ -212,7 +225,7 @@ while wants_to_play:
     #Initialize player hands and game control variables
     player.hand = []
     dealer.hand = []
-
+    player_turn = 1
     player_state = True
     player_win = False
     player_bust = False
@@ -229,7 +242,7 @@ while wants_to_play:
 
         #Take bet
         while True:
-            bet = int(input("Place your bet between $1-20 (default is $10): "))
+            bet = int(input(f"Place your bet between $1-{player.money} (default is $10): "))
             if bet > 0 and bet <= player.money:
                 player.place_bet(bet)
                 break
@@ -256,8 +269,30 @@ while wants_to_play:
         print(player)
 
         while player_state:
-            player_input = input("Enter 1 to hit or any to stand: ")
+            if player_turn == 1:
+                #if dealer has ace, offer insurance
+                if False:
+                    pass
+                #if player has duplicate cards, offer to split
+                elif False:
+                    pass
+                else:
+
+                    player_input = input("""
+1 to hit,
+2 to double down,
+3 to surrender,
+Enter to stand: """)
+
+
+            else:
+                player_input = input("Enter 1 to hit or any to stand: ")
+
             player_state = player.player_turn(player_input, deck)
+
+            if player_input == "3":
+                break
+
             if player.check_21():
                 player.player_wins()
                 player_win = True
@@ -269,9 +304,15 @@ while wants_to_play:
             print("You have: ")
             print(player)
 
+            player_turn += 1
+
+        #End of player's turn
+
         if player_win:
             break
         elif player_bust:
+            break
+        elif player_input == "3":
             break
 
         #Reset state for dealer
@@ -299,6 +340,8 @@ while wants_to_play:
             break
         if dealer_bust:
             break
+
+        #End of Dealer's turn
 
         #Everyone has stayed, need to compare
 
