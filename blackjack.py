@@ -161,7 +161,7 @@ class Dealer(Player):
         elif other == self.hand_value():
             print("It's a draw.")
         else:
-            self.player_wins()
+            self.player_wins(other)
 
     def player_wins(self, other):
         print("Dealer wins!")
@@ -179,28 +179,31 @@ class Dealer(Player):
 
 
 wants_to_play = True
+player = Player()
+dealer = Dealer()
 
 #Start of game
 
 while wants_to_play:
 
-    player = Player()
-    dealer = Dealer()
-
+    #Initialize player hands and game control variables
+    player.hand = []
+    dealer.hand = []
+    deck = Deck()
     player_state = True
-
     player_win = False
     player_bust = False
     dealer_win = False
     dealer_bust = False
 
+    print(f"Player has ${player.money} in the bank.")
+
     while True:
-        deck = Deck()
 
         #Take bet
         while True:
             bet = int(input("Place your bet between $1-20 (default is $10): "))
-            if bet > 0 and bet <= 20:
+            if bet > 0 and bet <= player.money:
                 player.place_bet(bet)
                 break
             else:
@@ -277,6 +280,7 @@ while wants_to_play:
 
     #Game over, check if the player would like to play again, and has funds to do so
     if player.money > 0:
-
         if (input("Would you like to play again?  (Y or N): ").lower()) != "y":
             wants_to_play = False
+    else:
+        print("Sorry, you're broke.")
