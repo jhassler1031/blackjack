@@ -284,3 +284,4 @@ while wants_to_play:
             wants_to_play = False
     else:
         print("Sorry, you're broke.")
+        wants_to_play = False
