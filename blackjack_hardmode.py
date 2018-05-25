@@ -61,6 +61,25 @@ class Deck:
             print(card)
         return ""
 
+#Shoe class - group of decks
+class Shoe(Deck):
+
+    def __init__(self, num_decks = 6):
+        self.cards = []
+        self.decks = []
+
+        for _ in range(num_decks):
+            self.decks.append(Deck())
+
+        for deck in self.decks:
+            for card in deck.cards:
+                self.cards.append(card)
+
+        random.shuffle(self.cards)
+
+    def count(self):
+        return len(self.cards)
+
 #Player class
 
 class Player:
@@ -108,6 +127,9 @@ class Player:
 
     def place_bet(self, bet=10):
         self.bet = bet
+
+    def double_down(self):
+        self.bet += self.bet 
 
     def player_wins(self):
         print("Player wins!")
@@ -181,6 +203,7 @@ class Dealer(Player):
 wants_to_play = True
 player = Player()
 dealer = Dealer()
+deck = Shoe()
 
 #Start of game
 
@@ -189,12 +212,16 @@ while wants_to_play:
     #Initialize player hands and game control variables
     player.hand = []
     dealer.hand = []
-    deck = Deck()
+
     player_state = True
     player_win = False
     player_bust = False
     dealer_win = False
     dealer_bust = False
+
+    #Check if Shoe needs reshuffle
+    if deck.count() <= 26:
+        deck = Shoe()
 
     print(f"Player has ${player.money} in the bank.")
 
