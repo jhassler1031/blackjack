@@ -87,6 +87,7 @@ class Player:
     def __init__(self):
         self.hand = []
         self.split_hand = []
+        self.insurance = 0
         self.money = 100
         self.bet = 0
 
@@ -143,6 +144,24 @@ class Player:
     def surrender(self):
         print("Player surrenders.")
         self.money -= (self.bet / 2)
+
+    def buy_ins(self, ins):
+        print("Player buys insurance.")
+        self.insurance = ins
+
+    def pay_ins(self):
+        print("The player collects insurance.")
+        self.money += (2 * self.insurance)
+
+    def lose_ins(self):
+        print("The player loses insurance.")
+        self.money -= self.insurance
+
+    def can_split(self):
+        if self.hand[0].name == self.hand[1].name:
+            return True
+        else:
+            return False
 
     def player_wins(self):
         print("Player wins!")
@@ -203,6 +222,12 @@ class Dealer(Player):
         print(self)
         other.player_loses()
 
+    def has_ace(self):
+        if self.hand[0].name == "Ace":
+            return True
+        else:
+            return False
+
 
 
 
@@ -252,6 +277,24 @@ while wants_to_play:
         #Deal a hand
         dealer.deal_hand(player)
 
+        print("Dealer's top card: ")
+        print(dealer.hand[0])
+        print()
+
+        want_ins = ""
+
+        if dealer.has_ace():
+            want_ins = input("Would the player like to buy insurance? Y or N: ")
+            if want_ins.lower() == "y":
+                while True:
+                    ins_amount = input("Enter amount for insurance (cannot be more than half your bet): ")
+                    ins_amount = int(ins_amount)
+                    if ins_amount > 0 and ins_amount < (player.bet / 2) + 1:
+                        break
+                    else:
+                        print("Invalid amount.")
+                player.buy_ins(ins_amount)
+
         #check for 21 at the beginning
         if player.check_21() and dealer.check_21():
             print("It's a draw.")
@@ -260,8 +303,13 @@ while wants_to_play:
             player.player_wins()
             break
         elif dealer.check_21():
+            if want_ins.lower() == "y":
+                player.pay_ins()
             dealer.player_wins(player)
             break
+
+        if want_ins.lower() == "y":
+            player.lose_ins()
 
         #Player's turn
 
@@ -270,11 +318,8 @@ while wants_to_play:
 
         while player_state:
             if player_turn == 1:
-                #if dealer has ace, offer insurance
-                if False:
-                    pass
                 #if player has duplicate cards, offer to split
-                elif False:
+                if player.can_split():
                     pass
                 else:
 
