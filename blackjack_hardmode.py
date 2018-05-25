@@ -94,6 +94,9 @@ class Player:
     def add_card(self, card):
         self.hand.append(card)
 
+    def add_to_split(self, card):
+        self.split_hand.append(card)
+
     def hand_value(self):
         value = 0
         for card in self.hand:
@@ -162,6 +165,11 @@ class Player:
             return True
         else:
             return False
+
+    def split_hand(self, deck):
+        self.split_hand.append(self.hand.pop())
+        self.add_to_split(deck.draw_a_card())
+        self.add_card(deck.draw_a_card())
 
     def player_wins(self):
         print("Player wins!")
@@ -317,10 +325,17 @@ while wants_to_play:
         print(player)
 
         while player_state:
+
+            player_split = False
+
             if player_turn == 1:
                 #if player has duplicate cards, offer to split
                 if player.can_split():
-                    pass
+                    split_input = input("Would you like to split? Y or N ")
+                    if split_input.lower() == "y":
+                        player.split_hand(deck)
+                        player_split = True
+
                 else:
 
                     player_input = input("""
@@ -359,6 +374,28 @@ Enter to stand: """)
             break
         elif player_input == "3":
             break
+
+#if player split, need to run through playing with split hand
+
+        #start of split hand
+        if player_split:
+
+            player_state = True
+
+            player_input = input("Enter 1 to hit or any to stand: ")
+
+            player_state = player.player_turn(player_input, deck)
+
+            if player.check_21():
+                player.player_wins()
+                player_win = True
+                break
+            elif player.check_bust():
+                dealer.player_wins(player)
+                player_bust = True
+                break
+            print("You have: ")
+            print(player)
 
         #Reset state for dealer
 
