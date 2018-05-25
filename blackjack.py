@@ -202,7 +202,7 @@ while wants_to_play:
 
         #Take bet
         while True:
-            bet = int(input("Place your bet between $1-20 (default is $10): "))
+            bet = int(input(f"Place your bet between $1-{player.money} (default is $10): "))
             if bet > 0 and bet <= player.money:
                 player.place_bet(bet)
                 break
