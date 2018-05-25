@@ -223,6 +223,10 @@ while wants_to_play:
             dealer.player_wins(player)
             break
 
+        print("Dealer's top card: ")
+        print(dealer.hand[0])
+        print()
+
         #Player's turn
 
         print("Player's turn. You have: ")
