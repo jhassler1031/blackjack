@@ -64,7 +64,6 @@ class Hand:
 
     def __init__(self):
         self.cards = []
-        self.bet = 0
 
     def add_card(self, card):
         self.cards.append(card)
@@ -87,20 +86,10 @@ class Hand:
     def check_bust(self):
         if self.hand_value() > 21:
             print("Bust!")
+            print(self)
             return True
         else:
             return False
-
-    def place_bet(self, bet=10):
-        self.bet = bet
-
-    def double_down(self):
-        print("Player doubled down.")
-        self.bet += self.bet
-
-    def surrender(self):
-        print("Player surrenders.")
-        self.money -= (self.bet / 2)
 
     def __str__(self):
         for card in self.cards:
@@ -118,28 +107,33 @@ class Player:
         self.hand_count = 1
         self.insurance = 0
         self.money = 100
+        self.bet = 0
 
     def print_hands(self):
         for count in range(self.hand_count):
             print(self.hands[count])
 
-    def player_turn(self, player_input, deck):
+    def place_bet(self, bet=10):
+        self.bet = bet
+
+    def player_turn(self, player_input, count, deck):
         if player_input == "1":     #player hits
             print("Player hits.")
             print()
-            self.add_card(deck.draw_a_card())
+            self.hands[count].add_card(deck.draw_a_card())
             return True
-        elif player_input == "2":   #player doubled down
-            self.double_down()
-            self.add_card(deck.draw_a_card())
-            return True
-        elif player_input == "3":   #player surrenders
-            self.surrender()
-            return False
         else:
             print("Player stands.")
             print()
             return False
+
+    def double_down(self):
+        print("Player doubled down.")
+        self.bet += self.bet
+
+    def surrender(self):
+        print("Player surrenders.")
+        self.money -= (self.bet / 2)
 
     def buy_ins(self, ins):
         print("Player buys insurance.")
@@ -168,7 +162,7 @@ class Player:
 
     def player_wins(self):
         print("Player wins!")
-        print(self)
+        print(self.print_hands())
         self.money += self.bet
 
     def player_loses(self):
@@ -188,10 +182,10 @@ class Dealer(Player):
         self.hand_count = 1
 
     def player_turn(self, deck, max_on_hit = 16):
-        if self.hand_value() <= max_on_hit:
+        if self.hands[0].hand_value() <= max_on_hit:
             print("Dealer hits.")
             print()
-            self.add_card(deck.draw_a_card())
+            self.hands[0].add_card(deck.draw_a_card())
             return True
         else:
             print("Dealer stands.")
@@ -203,33 +197,17 @@ class Dealer(Player):
             other.hands[0].add_card(deck.draw_a_card())
             self.hands[0].add_card(deck.draw_a_card())
 
-        print("Dealer's top card: ")
-        print(self.hands[0].cards[0])
-        print()
-
-        print("Player's hand: ")
-        other.print_hands()
-
-        for count in range(other.hand_count):
-            if other.can_split(count):
-                split_input = input("Would you like to split? Y or N ")
-                if split_input.lower() == "y":
-                    player.split_hand(deck)
-                    print("Player's hands: ")
-                    other.print_hands()
-
-
-    def compare_hands(self, other):
-        if other > self.hand_value():
+    def compare_hands(self, other, count):
+        if other.hands[count].hand_value() > self.hands[0].hand_value():
             other.player_wins()
-        elif other == self.hand_value():
+        elif other.hands[count].hand_value() == self.hands[0].hand_value():
             print("It's a draw.")
         else:
             self.player_wins(other)
 
     def player_wins(self, other):
         print("Dealer wins!")
-        print(self)
+        print(self.print_hands())
         other.player_loses()
 
     def has_ace(self):
@@ -240,12 +218,3 @@ class Dealer(Player):
 
 
 ##########################################
-
-deck = Deck()
-player = Player()
-dealer = Dealer()
-
-dealer.deal_hand(player, deck)
-
-player.print_hands()
-dealer.print_hands()
