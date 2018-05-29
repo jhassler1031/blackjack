@@ -154,11 +154,11 @@ Play on (Enter):
 
 
         #End of player's turn
-
-        if player_win:
-            break
-        elif player_bust:
-            break
+        if player.hand_count == 1:
+            if player_win:
+                break
+            elif player_bust:
+                break
 
         #Reset state for dealer
 
@@ -181,10 +181,11 @@ Play on (Enter):
                 break
             print(dealer)
 
-        if dealer_win:
-            break
-        if dealer_bust:
-            break
+        if player.hand_count == 1:
+            if dealer_win:
+                break
+            if dealer_bust:
+                break
 
         #End of Dealer's turn
 
